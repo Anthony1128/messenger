@@ -4,7 +4,7 @@ from datetime import datetime
 import requests
 
 
-# мессенджер с интрефейсом из client.ui
+# messenger with interface from client.ui
 class Messenger(QtWidgets.QMainWindow, Ui_MainWindow):
     def __init__(self, url):
         super().__init__()
@@ -14,15 +14,15 @@ class Messenger(QtWidgets.QMainWindow, Ui_MainWindow):
         self.after_timestamp = 0
         self.pushButton.pressed.connect(self.button_pressed)
 
-        # подгузка всех сообщений из базы данных
+        # load all messages from database
         self.load_messages
 
-        # подгрузка новых сообщений каждую секунду
+        # load new messages every second
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.update_messages)
         self.timer.start(1000)
 
-    # вывод сообщения в читаемой форме
+    # message input in readable form
     def pretty_print(self, message):
         dt = datetime.fromtimestamp(message['timestamp'])
         dt = dt.strftime('%Y/%m/%d %H:%M:%S')
@@ -32,7 +32,7 @@ class Messenger(QtWidgets.QMainWindow, Ui_MainWindow):
         self.textBrowser.append('')
         self.textBrowser.repaint()
 
-    # загрузка сообщений
+    # message upload
     def update_messages(self):
         response = None
         messages = None
@@ -42,8 +42,8 @@ class Messenger(QtWidgets.QMainWindow, Ui_MainWindow):
         except:
             pass
 
-        # проверка соединений, наличия новых сообщений
-        # и фиксирование последнего загруженного сообщения
+        # check connection, new messages
+        # and fixing last loaded message
         if response and response.status_code == 200:
             messages = response.json()['messages']
             for message in messages:
@@ -51,12 +51,12 @@ class Messenger(QtWidgets.QMainWindow, Ui_MainWindow):
                 self.after_timestamp = message['timestamp']
         return messages
 
-    # подгрузка всех старых сообщений
+    # load all old messages
     def load_messages(self):
         while self.update_messages():
             pass
 
-    # функция нажатия кнопки отправить сообщение
+    # function for sending message button
     def button_pressed(self):
         name = self.lineEdit.text()
         text = self.textEdit.toPlainText()
@@ -67,7 +67,7 @@ class Messenger(QtWidgets.QMainWindow, Ui_MainWindow):
         except:
             pass
 
-        # проверка соединения с сервером
+        # test connection with server
         if response and response.status_code == 200:
             self.textEdit.clear()
             self.textEdit.repaint()
@@ -76,7 +76,7 @@ class Messenger(QtWidgets.QMainWindow, Ui_MainWindow):
             self.textBrowser.repaint()
 
 
-# запуск приложения
+# app entrypoint
 app = QtWidgets.QApplication([])
 ip_address = 'http://127.0.0.1:5000/' # or ngrok's ip
 window = Messenger('{}'.format(ip_address))

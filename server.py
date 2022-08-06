@@ -7,13 +7,13 @@ app = Flask(__name__)
 db = []
 
 
-# стартовая страница мессенджера со ссылкой на страницу статуса
+# messenger starting page with link to status page
 @app.route('/')
 def start_page():
     return 'Welcome, see <a href="/status">status</a> for information'
 
 
-# страница статуса мессенджера
+# messenger status page
 @app.route('/status')
 def status():
     date_now = datetime.now()
@@ -26,7 +26,7 @@ def status():
     return date_data
 
 
-# функция отправки сообщений
+# send message function
 @app.route('/send', methods=['POST'])
 def send():
     data = request.json
@@ -39,7 +39,7 @@ def send():
     return {'ok': True}
 
 
-# список сообщений
+# list of messages
 @app.route('/messages')
 def messages():
     if 'after_timestamp' in request.args:
@@ -47,7 +47,7 @@ def messages():
     else:
         after_timestamp = 0
 
-    # пагинация
+    # pagination
     max_limit = 100
     if 'limit' in request.args:
         limit = int(request.args['limit'])
@@ -56,7 +56,7 @@ def messages():
     else:
         limit = max_limit
 
-    # подсчет сообщений которые надо вернуть
+    # count messages that should be returned
     after_id = 0
     for message in db:
         if message['timestamp'] > after_timestamp:
@@ -66,7 +66,7 @@ def messages():
     return {'messages': db[after_id:after_id+limit]}
 
 
-# запуск сервера
+# server entrypoint
 app.run()
 
 
